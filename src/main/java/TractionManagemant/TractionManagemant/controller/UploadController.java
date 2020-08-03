@@ -1,6 +1,7 @@
 package TractionManagemant.TractionManagemant.controller;
 
 import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,7 +41,7 @@ import java.util.*;
 public class UploadController {
 	private static Logger logger = LoggerFactory.getLogger(UploadController.class); 
 	String reason=" - ";
-	
+	String dont=" - ";
 	@Autowired
 	UploadRepository uploadRepository;                        
 	
@@ -52,7 +53,7 @@ public class UploadController {
 	
 	//Uploading a file from the UI
 	@PostMapping("/upload/{fileName}")
-	public void GetTransaction(@PathVariable (value="fileName") String filename) throws IOException  {
+	public void GetUploadTransaction(@PathVariable (value="fileName") String filename) throws IOException  {
 		
 		logger.info("upload file is called");
 	String fn="D:\\"+filename;
@@ -69,6 +70,7 @@ public class UploadController {
 
 	while(line != null) {
 	int flag=1;
+	reason=" ";
 
 	String a =line;
 
@@ -86,14 +88,14 @@ public class UploadController {
 	{
 	flag=0;
 	logger.info("Transaction ref id is invalid");
-      reason= reason + "  Transaction Reference ";
+      reason= reason + " Transaction Reference ";
 	}
 
 	//validation 2 ---------------- current date
-	String day= "28";
-	String month="07";
+	String day= "03";
+	String month="08";
 	String year="2020";
-	String date= "28072020";
+	String date= "03-08-2020";
 	
 	ZoneId z = ZoneId.of( "Asia/Kolkata" );
 	LocalDate today = LocalDate.now( z );
@@ -107,36 +109,8 @@ public class UploadController {
 	else {
 	flag=0;
 		logger.info(" invalid date");
+		reason= reason + "   Date ";
 	}
-
-	
-	/*
-	String date = null;
-	Date date1=null;
-	String formatDate = null;
-	DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-	LocalDateTime today = LocalDateTime.now() ;
-	try {
-	date1 = df.parse(date);
-	formatDate = df.format(date1);
-	}
-	catch(Exception e)
-	{
-		System.out.print(e);
-	}
-	if((formatDate).equals(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH).format(today))==true) {
-		logger.info("valid date");
-		//date = uploadRepository.setDate(date1);
-		
-	}
-	else {
-		flag=0;
-		logger.info(" invalid date");
-      reason= reason + "  Date ";
-
-		
-	}
-	*/
 	
 
     //Validation 3 ------------------------- Payer Name
@@ -156,7 +130,7 @@ public class UploadController {
 	}
 	
 	 //Validation 4 ------------------------- Payer Amount
-	String tempfour=a.substring(56, 68);
+	String tempfour=a.substring(55, 67);
 	String four=tempfour.trim();
 	System.out.println(four);
 	
@@ -171,7 +145,7 @@ public class UploadController {
 
 	
 	 //Validation 5 ------------------------- Payee Name
-	String temp1=a.substring(68, 103);
+	String temp1=a.substring(67, 102);
 	
 	String payee=temp1.trim();
 	System.out.println(payee);
@@ -182,11 +156,11 @@ public class UploadController {
 	else {
 		logger.info("String is invalid");
 	flag=0;
-      reason= reason + "  Payee Name ";
+      reason= reason + "   Payee Name ";
 	}
 
 	 //Validation 6 ------------------------- Payee Amount
-	String tempsix=a.substring(103, 115);
+	String tempsix=a.substring(102, 114);
 	String six=tempsix.trim();
 	System.out.println(six);
 	
@@ -196,15 +170,16 @@ public class UploadController {
 	else {
 	flag=0;
 		logger.info("String is invalid");
-reason= reason + "  Payer Amount ";
+reason= reason + "   Payer Account ";
 	}
 
 	 //Validation 3 ------------------------- Amount 
-	String seven1 =a.substring(115, 125);
-	String seven2 =a.substring(126);
+	String seven1 =a.substring(114, 124);
+	String seven2 =a.substring(125);
 	String nseven1 = seven1.trim();
 	String nseven2= seven2.trim();
-	String amount = nseven1.concat(nseven2);
+	String p =  nseven1.concat(".");
+	String amount = p.concat(nseven2);
 	int x=Integer.parseInt(nseven1);
 	int y=Integer.parseInt(nseven2);
 	System.out.println(x);
@@ -244,7 +219,7 @@ reason= reason + "  Payer Amount ";
 	
 	 if(uploadRepository.findByTransactionRef(transactionRef)==null) {
 		 UploadModel transaction= new UploadModel(date,  payer,  payee, amount, 
-					"valid",  transactionRef, reason);
+					"valid",  transactionRef, dont);
 		 logger.info("dump to valid database");
 			uploadRepository.save(transaction);
 		 
